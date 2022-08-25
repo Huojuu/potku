@@ -6,6 +6,7 @@ from pathlib import Path
 import dialogs.file_dialogs as fdialogs
 import widgets.gui_utils as gutils
 from modules.selection import Selector
+#from widgets.matplotlib.measurement import point_drag
 
 class SelectionDialog(QtWidgets.QDialog):
 
