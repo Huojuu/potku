@@ -108,6 +108,10 @@ class MatplotlibHistogramWidget(MatplotlibWidget):
         self.__x_data_min = min(self.__x_data)  # min x-value of data
         self.__y_data_min = min(self.__y_data)  # min y-value of data
 
+        # Sort legend text
+        self.sel_points = []
+        self.sel_text = []
+
         # Manually setting the limits for data
         #self.axes.set_xlim(self.__x_data_min, self.__x_data_max)
         #self.axes.set_ylim(self.__y_data_min, self.__y_data_max)
@@ -341,21 +345,15 @@ class MatplotlibHistogramWidget(MatplotlibWidget):
             selection_legend[key_string] = (label, isotope_str, sel.points,
                                             element)
 
-        # Sort legend text
-        global sel_text
-        sel_text = []
-        global sel_points
-        sel_points = []
-
         items = sorted(selection_legend.items(), key=lambda x: x[1][3])
 
         for item in items:
             # [0] is the key of the item.
-            sel_text.append(item[1][0])
-            sel_points.append(item[1][2])
+            self.sel_text.append(item[1][0])
+            self.sel_points.append(item[1][2])
 
-        leg = self.axes.legend(sel_points,
-                               sel_text,
+        leg = self.axes.legend(self.sel_points,
+                               self.sel_text,
                                loc=3,
                                bbox_to_anchor=(1, 0),
                                borderaxespad=0,
@@ -365,7 +363,7 @@ class MatplotlibHistogramWidget(MatplotlibWidget):
 
         # Set the markers back to original.
         for sel in self.measurement.selector.selections:
-            sel.points.set_marker(sel.LINE_MARKER)
+            self.sel.points.set_marker(sel.LINE_MARKER)
 
     def __toggle_tool_drag(self):
         if self.__button_drag.isChecked():
@@ -459,8 +457,8 @@ class MatplotlibHistogramWidget(MatplotlibWidget):
 
     def click_check(self, cursor_location):
         import numpy as np
-        x_cut_coord = np.array(sel_points[0].get_xdata())
-        y_cut_coord = np.array(sel_points[0].get_ydata())
+        x_cut_coord = np.array(self.sel_points[0].get_xdata())
+        y_cut_coord = np.array(self.sel_points[0].get_ydata())
 
         print(cursor_location)
 

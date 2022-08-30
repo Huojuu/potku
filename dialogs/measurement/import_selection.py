@@ -5,7 +5,7 @@ import os
 from pathlib import Path
 import dialogs.file_dialogs as fdialogs
 import widgets.gui_utils as gutils
-from modules.selection import Selector
+from modules import selection
 #from widgets.matplotlib.measurement import point_drag
 
 class SelectionDialog(QtWidgets.QDialog):
@@ -35,7 +35,7 @@ class SelectionDialog(QtWidgets.QDialog):
         self.filename = filename
         if filename is None:
             return
-        elements, current_selections = Selector.load_chosen(self, filename)
+        elements, current_selections = selection.Selector.load_chosen(self, filename)
         self.current_selections = current_selections
         self.treeWidget.clear() #Clears old selections from the tree
         self.set_elements(elements)

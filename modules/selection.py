@@ -36,10 +36,12 @@ __version__ = "2.0"
 import os
 import itertools
 
+#from widgets.matplotlib.measurement.point_drag import MplCanvas
 from . import math_functions as mf
 from . import general_functions as gf
 
 import matplotlib as mpl
+mpl.use('Qt5Agg')
 
 from dialogs.measurement.selection import SelectionSettingsDialog
 
@@ -48,6 +50,7 @@ from pathlib import Path
 from .element import Element
 
 import math
+from dialogs.measurement import import_selection
 #from widgets.matplotlib.measurement import point_drag
 
 class AxesLimits:
@@ -693,33 +696,18 @@ class Selection:
         self.all_xy = []
         self.read_data()
         self.midpoint_coord = self.calculate_midpoints(self.coord)
+        self.__SELECT_RADIUS2__ = 0.02
 
         self.point_to_move = None
         self.move_handler_id = None
 
-        self.sc = MplCanvas(self, width=5, height=4, dpi=100)
-        self.sc.axes.fill(*zip(*self.coord), zorder=1, fill=False,
+        self.axes.fill(*zip(*self.coord), zorder=1, fill=False,
                           color='orange')
-        self.sc.axes.scatter(*zip(*self.coord), zorder=3, marker='s',
+        self.axes.scatter(*zip(*self.coord), zorder=3, marker='s',
                              color='orange')
-        self.sc.axes.scatter(*zip(*self.midpoint_coord), zorder=2, marker='o',
+        self.axes.scatter(*zip(*self.midpoint_coord), zorder=2, marker='o',
                              color='gold')
         self.plot()
-
-        # Create toolbar, passing canvas as first parament, parent (self, the MainWindow) as second.
-        toolbar = NavigationToolbar(self.sc, self)
-
-        layout = QtWidgets.QVBoxLayout()
-        layout.addWidget(toolbar)
-        layout.addWidget(self.sc)
-
-        # Create a placeholder widget to hold our toolbar and canvas.
-        widget = QtWidgets.QWidget()
-        widget.setLayout(layout)
-        self.setCentralWidget(widget)
-        self.sc.mpl_connect('button_press_event', self.button_press_handler)
-        self.sc.mpl_connect('button_release_event', self.button_release_handler)
-        self.show()
 
     def add_point(self, point):
         """Adds a point to selection.
@@ -864,7 +852,7 @@ class Selection:
         self.element_colormap = None
 
     def read_data(self):
-        f = open(self.import_selection.SelectionDialog.filename, "r")
+        f = open(import_selection.SelectionDialog.filename, "r")
         lines = f.readlines()
         result = []
         for line in lines:
@@ -948,12 +936,12 @@ class Selection:
         self.show()
 
     def find_closest_point(self, plist, point):
-        closest_point = sorted([(self.point_point_distance(x, point), list(enumerate(x))) for x in plist if self.point_point_distance(x, point) < __SELECT_RADIUS2__])
+        closest_point = sorted([(self.point_point_distance(x, point), list(enumerate(x))) for x in plist if self.point_point_distance(x, point) < self.__SELECT_RADIUS2__])
         temp_point_list = []
         for i, x in enumerate(plist):
             print(f'{self.point_point_distance(x, point)}, {i}, {x}')
             temp_point_list.append((self.point_point_distance(x, point), i, x))
-        closest_point = sorted([x for x in temp_point_list if x[0] < __SELECT_RADIUS2__])
+        closest_point = sorted([x for x in temp_point_list if x[0] < self.__SELECT_RADIUS2__])
         return closest_point[0] if closest_point else None
 
 
